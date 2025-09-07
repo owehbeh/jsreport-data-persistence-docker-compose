@@ -1,9 +1,6 @@
 services:
   jsreport:
     image: jsreport/jsreport:latest
-    # Do NOT publish ports when using the proxy
-    # ports:
-    #   - "5488:5488"
     volumes:
       - jsreport-data:/app/data
     labels:
@@ -12,6 +9,16 @@ services:
       - traefik.http.routers.jsreport.entrypoints=https
       - traefik.http.routers.jsreport.tls=true
       - traefik.http.services.jsreport.loadbalancer.server.port=5488
-
+    environment:
+      # --- jsreport authentication ---
+      # admin login for Studio/API
+      - extensions_authentication_admin_username=${JSREPORT_ADMIN_USER:?}
+      - extensions_authentication_admin_password=${JSREPORT_ADMIN_PASS:?}
+      # required cookie session secret (use a long random string)
+      - extensions_authentication_cookieSession_secret=${JSREPORT_SESSION_SECRET:?}
+      # good practice if you’re serving only over HTTPS
+      - extensions_authentication_cookieSession_cookie_secure=true
+      # (optional) set a custom login cookie name:
+      # - extensions_authentication_cookieSession_name=jsreport.sid
 volumes:
   jsreport-data:
