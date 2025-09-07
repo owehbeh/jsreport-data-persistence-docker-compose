@@ -1,0 +1,17 @@
+services:
+  jsreport:
+    image: jsreport/jsreport:latest
+    # Do NOT publish ports when using the proxy
+    # ports:
+    #   - "5488:5488"
+    volumes:
+      - jsreport-data:/app/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jsreport.rule=Host(`reports.example.com`) && PathPrefix(`/`)
+      - traefik.http.routers.jsreport.entrypoints=https
+      - traefik.http.routers.jsreport.tls=true
+      - traefik.http.services.jsreport.loadbalancer.server.port=5488
+
+volumes:
+  jsreport-data:
